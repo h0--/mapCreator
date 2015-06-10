@@ -31,7 +31,7 @@ zoom = p.getint(name,'zoom')
 if not os.path.exists( p.get(name,'dest')):
     os.mkdir( p.get(name,'dest'))
 
-dest = os.path.join( p.get(name,'dest') , "%s_zoom%i.jpeg" % (name,zoom))
+dest = os.path.join( p.get(name,'dest') , "%s_zoom%i.png" % (name,zoom))
 tilestore = p.get(name,'tilestore')
 
 # parse bounding box
@@ -46,13 +46,13 @@ top_left = deg2num(bbox['n'],bbox['w'], zoom)
 bottom_right = deg2num(bbox['s'],bbox['e'], zoom)
 
 
-# create tile list 
+# create tile list
 tiles = []
 
 for x in range(top_left[0], bottom_right[0]):
     for y in range(top_left[1], bottom_right[1]):
         tiles.append((zoom,x,y))
-        
+
 print 'Nr tiles: ', len(tiles)
 
 
@@ -61,10 +61,10 @@ print 'Nr tiles: ', len(tiles)
 
 height = (bottom_right[1] - top_left[1]) * 256
 width = (bottom_right[0] - top_left[0]) * 256
-img = Image.new("RGB", (width,height))
+img = Image.new("RGBA", (width,height))
 
 for idx,tile in enumerate(tiles):
-    
+
     zoom,x,y = tile
     fName = '_'.join([str(f) for f in tile]) + '.png'
     fName = os.path.join(tilestore, fName)
@@ -75,10 +75,10 @@ for idx,tile in enumerate(tiles):
         print ' ok'
     else:
         print ' cached'
-        
+
     # paste
     tmp = Image.open(fName)
     img.paste(tmp, (256 * (x - top_left[0]), 256 * (y - top_left[1])))
-    
+
 print 'Saving to ', dest
-img.save(dest, "JPEG")
+img.save(dest, "PNG")
